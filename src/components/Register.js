@@ -1,7 +1,11 @@
-import React from "react"
-import { Link } from "react-router-dom";
+import React, { useContext } from "react"
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/UserContext";
 
 const Register = (props) => {
+  const {createUser, signWithGoogle} = useContext(AuthContext)
+  console.log(createUser);
+  const navigate =useNavigate()
   const handleSubmit = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -9,7 +13,29 @@ const Register = (props) => {
     const email = form.email.value;
     const password = form.password.value;
     console.log(name,email, password);
+
+    createUser(email, password)
+    .then(result=> {
+      const user = result.user;
+      console.log(user);
+      form.reset()
+      navigate('/')
+    })
+    .catch(error => {
+      console.log(error);
+    })
   };
+
+  const handleGoogleSignIn = ()=>{
+    signWithGoogle()
+    .then(result =>{
+      const user = result.user;
+      console.log(user);
+      navigate('/')
+    })
+    .catch(error => console.error(error))
+  }
+
   return (
     <div>
       <div className="hero min-h-screen bg-base-200">
@@ -64,6 +90,10 @@ const Register = (props) => {
                 <button className="btn btn-primary">Register</button>
               </div>
             </form>
+
+            <button onClick={handleGoogleSignIn} className="btn btn-success">Google</button>
+
+
           </div>
         </div>
       </div>
